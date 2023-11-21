@@ -8,9 +8,7 @@ import yfinance as yf
 # returns converted timestamp in yyy-mm-dd format
 # yyy-mm-mm HH:MM:SS-HH:MM
 def timestampconverter(timestp):
-    # timestp = int(time.mktime(date.timetuple()))
-    # timestp = timestp.astype(datetime.datetime)
-    return timestp.strftime('%Y-%m-%d %H:%M:%S-%H:%M')
+    return timestp.strftime('%Y-%m-%d %H:%M:%S')
 
 # renames index from timestamps to strings
 def rename_index(data):
@@ -46,14 +44,17 @@ def avg_range_days(data):
     return calculate_avg(diff)
 
 # return average range in set amount of hours for set number of days
-def avg_range_hours(data):
+def avg_range_hours(data, hour):
     diff = []
     for i in data.index:
-        if '15:30:00' in i:
-            print(i)
-        # diff.append(data['High'][i] - data['Low'][i])
+        if (hour == 'last'):
+            if ('15:30:00' in i):
+                diff.append(data['High'][i] - data['Low'][i])
+        elif (hour == 'first'):
+            if ('09:30:00' in i):
+                    diff.append(data['High'][i] - data['Low'][i])
     
-    # return calculate_avg(diff)
+    return calculate_avg(diff)
 
 
 
@@ -65,8 +66,6 @@ def main(TICK):
     # daily in last 30 - 90 days
     days30, days60, days90 = get_data(TICK, '1d')
 
-    print(days30) # TEMP
-
     d30 = avg_range_days(days30)
     d60 = avg_range_days(days60)
     d90 = avg_range_days(days90)
@@ -76,16 +75,35 @@ def main(TICK):
     # first hour in last 30 - 90 days
     hours30, hours60, hours90 = get_data(TICK, '1h')
 
-    # avg_range_hours(hours30)
-    # avg_range_hours(hours60)
-    # avg_range_hours(hours90)
+    lh30 = avg_range_hours(hours30, "last")
+    lh60 = avg_range_hours(hours60, "last")
+    lh90 = avg_range_hours(hours90, "last")
 
+    fh30 = avg_range_hours(hours30, "first")
+    fh60 = avg_range_hours(hours60, "first")
+    fh90 = avg_range_hours(hours90, "first")
 
 
     # print all results
-    print(d30)
-    print(d60)
-    print(d90)
+    print("AVERAGE RANGES:\n")
+
+    print("_30 days_")
+    print("daily: ", d30)
+    print("last hour: ", lh30)
+    print("first hour: ", fh30)
+    print("\n")
+
+    print("_60 days_")
+    print("daily: ", d60)
+    print("last hour: ", lh60)
+    print("first hour: ", fh60)
+    print("\n")
+
+    print("_90 days_")
+    print("daily: ", d90)
+    print("last hour: ", lh90)
+    print("first hour: ", fh90)
+    print("\n")
 
 
 main('^GSPC')

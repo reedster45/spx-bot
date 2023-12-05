@@ -19,15 +19,17 @@ def rename_index(data):
 def get_data(TICK, interval):
     spx = yf.Ticker(TICK)
 
+    data07 = spx.history(period='7d', interval=interval)
     data30 = spx.history(period='30d', interval=interval)
     data60 = spx.history(period='60d', interval=interval)
     data90 = spx.history(period='90d', interval=interval)
 
+    rename_index(data07)
     rename_index(data30)
     rename_index(data60)
     rename_index(data90)
 
-    return data30, data60, data90
+    return data07, data30, data60, data90
     
 
 
@@ -64,8 +66,9 @@ def main(TICK):
     # AVERAGE RANGES
 
     # daily in last 30 - 90 days
-    days30, days60, days90 = get_data(TICK, '1d')
+    days07, days30, days60, days90 = get_data(TICK, '1d')
 
+    d07 = avg_range_days(days07)
     d30 = avg_range_days(days30)
     d60 = avg_range_days(days60)
     d90 = avg_range_days(days90)
@@ -73,12 +76,14 @@ def main(TICK):
     
     # last hour in last 30 - 90 days
     # first hour in last 30 - 90 days
-    hours30, hours60, hours90 = get_data(TICK, '1h')
+    hours07, hours30, hours60, hours90 = get_data(TICK, '1h')
 
+    lh07 = avg_range_hours(hours07, "last")
     lh30 = avg_range_hours(hours30, "last")
     lh60 = avg_range_hours(hours60, "last")
     lh90 = avg_range_hours(hours90, "last")
 
+    fh07 = avg_range_hours(hours07, "first")
     fh30 = avg_range_hours(hours30, "first")
     fh60 = avg_range_hours(hours60, "first")
     fh90 = avg_range_hours(hours90, "first")
@@ -86,6 +91,12 @@ def main(TICK):
 
     # print all results
     print("AVERAGE RANGES:\n")
+
+    print("_07 days_")
+    print("daily: ", d07)
+    print("last hour: ", lh07)
+    print("first hour: ", fh07)
+    print("\n")
 
     print("_30 days_")
     print("daily: ", d30)
